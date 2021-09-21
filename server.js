@@ -10,12 +10,12 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
-// Routes
 
+// Home page
 app.get("/", function (req, res) {
   res.sendFile(path.join(__dirname, "./public/index.html"));
 });
-
+// notes page
 app.get("/notes", function (req, res) {
   res.sendFile(path.join(__dirname, "./public/notes.html"));
 });
@@ -25,6 +25,7 @@ app.get("/api/notes", function (req, res) {
   res.sendFile(path.join(__dirname, "/db/db.json"));
 });
 
+// Post Notes
 app.post("/api/notes", function (req, res) {
   var newNote = req.body;
   var newID = uniqid();
@@ -69,6 +70,7 @@ app.delete("/api/notes/:id", function (req, res) {
   res.redirect("/notes");
 });
 
+//Default Generic route
 app.get("*", function (req, res) {
   res.sendFile(path.join(__dirname, "./public/index.html"));
 });
