@@ -20,72 +20,66 @@ app.use(express.static(path.join(__dirname, "public")));
 // Routes
 
 app.get("/", function (req, res) {
-    res.sendFile(path.join(__dirname, "./public/index.html")); 
+  res.sendFile(path.join(__dirname, "./public/index.html"));
 });
-
 
 app.get("/notes", function (req, res) {
-    res.sendFile(path.join(__dirname, "./public/notes.html"));
+  res.sendFile(path.join(__dirname, "./public/notes.html"));
 });
-  
+
 // Get Notes
 app.get("/api/notes", function (req, res) {
-    res.sendFile(path.join(__dirname, "/db/db.json"));
+  res.sendFile(path.join(__dirname, "/db/db.json"));
 });
 
 app.post("/api/notes", function (req, res) {
-    var newNote = req.body;
-    var newID = uniqid();
+  var newNote = req.body;
+  var newID = uniqid();
 
-    newNote.id = newID;
-    
-    fs.readFile("./db/db.json",(err, data) => {
-        console.log('data', data);
-        if(err) throw err;
+  newNote.id = newID;
 
-        let dbFile = JSON.parse(data);
-        dbFile.push(newNote);
+  fs.readFile("./db/db.json", (err, data) => {
+    console.log("data", data);
+    if (err) throw err;
 
-        fs.writeFile("./db/db.json", JSON.stringify(dbFile), "utf-8", err => {
-            if (err) throw err;
-            console.log('data saved!')
-        })
-    })
-    res.redirect('/notes');
+    let dbFile = JSON.parse(data);
+    dbFile.push(newNote);
 
+    fs.writeFile("./db/db.json", JSON.stringify(dbFile), "utf-8", (err) => {
+      if (err) throw err;
+      console.log("data saved!");
+    });
+  });
+  res.redirect("/notes");
 });
 
 // Bonus - DELETE request
-app.delete('/api/notes/:id', function (req, res) {
-    fs.readFile("./db/db.json",(err, data) => {
-        console.log('data', data);
-        if(err) throw err;
-        var finalArray = [];
+app.delete("/api/notes/:id", function (req, res) {
+  fs.readFile("./db/db.json", (err, data) => {
+    if (err) throw err;
+    /* Create a new Array  */
+    var finalArray = [];
 
-        let dbFile = JSON.parse(data);
-        console.log('dbFile', dbFile);
-        deleteId = req.params.id ;
-        for(var index=0; index < dbFile.length; index++) {
-            if(dbFile[index].id !== deleteId) {
-                finalArray.push(dbFile[index]);
-            }
-        }
-        console.log("finalArray", finalArray);
-        fs.writeFile("./db/db.json", JSON.stringify(finalArray), "utf-8", err => {
-            if (err) throw err;
-            console.log('data saved!')
-        })
-    })
-    res.redirect('/notes');
+    let dbFile = JSON.parse(data);
+    deleteId = req.params.id;
+
+    dbFile.filter((note) => {
+      if (note.id !== deleteId) {
+        finalArray.push(note);
+      }
+    });
+    fs.writeFile("./db/db.json", JSON.stringify(finalArray), "utf-8", (err) => {
+      if (err) throw err;
+      console.log("data saved!");
+    });
+  });
+  res.redirect("/notes");
 });
 
-
-app.get('*', function(req, res) {
-    res.sendFile(path.join(__dirname, "./public/index.html"));
-})
+app.get("*", function (req, res) {
+  res.sendFile(path.join(__dirname, "./public/index.html"));
+});
 
 app.listen(PORT, function (req, res) {
-console.log("App listening on PORT:" + " " + PORT);
+  console.log("App listening on PORT:" + " " + PORT);
 });
-
-
