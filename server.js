@@ -55,6 +55,31 @@ app.post("/api/notes", function (req, res) {
 
 });
 
+// Bonus - DELETE request
+app.delete('/api/notes/:id', function (req, res) {
+    fs.readFile("./db/db.json",(err, data) => {
+        console.log('data', data);
+        if(err) throw err;
+        var finalArray = [];
+
+        let dbFile = JSON.parse(data);
+        console.log('dbFile', dbFile);
+        deleteId = req.params.id ;
+        for(var index=0; index < dbFile.length; index++) {
+            if(dbFile[index].id !== deleteId) {
+                finalArray.push(dbFile[index]);
+            }
+        }
+        console.log("finalArray", finalArray);
+        fs.writeFile("./db/db.json", JSON.stringify(finalArray), "utf-8", err => {
+            if (err) throw err;
+            console.log('data saved!')
+        })
+    })
+    res.redirect('/notes');
+});
+
+
 app.get('*', function(req, res) {
     res.sendFile(path.join(__dirname, "./public/index.html"));
 })
